@@ -3,88 +3,608 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flarepoint Entertainment</title>
+    <title>Flarepoint Entertainment | Premium Horror & Indie Maps</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Courier New', Courier, monospace; }
-        body { background: linear-gradient(to bottom, #140505 0%, #080202 30%, #000000 60%); color: #d1d1d1; overflow-x: hidden; height: 250vh; transition: background-color 0.5s ease; }
-        .navbar { position: fixed; top: 0; left: 0; width: 100%; padding: 20px; display: flex; align-items: center; z-index: 100; }
-        .logo-btn { background: rgba(139, 0, 0, 0.15); border: 1px solid rgba(255, 0, 0, 0.3); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: #ff6666; padding: 10px 16px; cursor: pointer; font-weight: bold; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; border-radius: 4px; transition: all 0.3s ease; }
-        .logo-btn:hover { background: rgba(139, 0, 0, 0.4); border-color: #ff0000; box-shadow: 0 0 15px rgba(255, 0, 0, 0.4); color: #fff; }
-        .scrolling-title { position: fixed; top: 30px; left: 50%; transform: translateX(-50%); font-size: 22px; letter-spacing: 6px; color: #ff3333; text-shadow: 0 0 8px rgba(255, 0, 0, 0.5); opacity: 1; transition: opacity 0.1s linear; pointer-events: none; z-index: 98; }
-        .settings-menu { position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background: rgba(10, 3, 3, 0.75); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-right: 1px solid rgba(255, 0, 0, 0.2); padding: 30px; padding-top: 100px; transition: left 0.4s cubic-bezier(0.77, 0.2, 0.05, 1.0); z-index: 99; box-shadow: 10px 0 30px rgba(0, 0, 0, 0.8); }
-        .settings-menu.open { left: 0; }
-        .menu-item { display: block; color: #b0b0b0; text-decoration: none; font-size: 15px; margin-bottom: 30px; letter-spacing: 2px; cursor: pointer; transition: color 0.3s, padding-left 0.3s; }
-        .menu-item:hover { color: #ff3333; padding-left: 5px; }
-        .hero-intro { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
-        .hero-intro h1 { font-size: 40px; letter-spacing: 8px; margin-bottom: 20px; color: #ffffff; text-shadow: 0 0 20px rgba(255, 255, 255, 0.1); }
-        .hero-intro p { font-size: 14px; color: #888; letter-spacing: 2px; }
-        .scroll-indicator { margin-top: 50px; font-size: 11px; color: #ff3333; letter-spacing: 3px; animation: breathe 2.5s infinite; }
-        .showcase-section { padding: 100px 0; opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease, transform 0.8s ease; }
-        .showcase-section.reveal { opacity: 1; transform: translateY(0); }
-        .showcase-title { text-align: center; font-size: 24px; letter-spacing: 4px; margin-bottom: 40px; color: #ff3333; }
-        .horizontal-scroll-container { display: flex; gap: 30px; overflow-x: auto; padding: 20px 50px; scroll-behavior: smooth; }
-        .horizontal-scroll-container::-webkit-scrollbar { height: 6px; }
-        .horizontal-scroll-container::-webkit-scrollbar-track { background: #000; }
-        .horizontal-scroll-container::-webkit-scrollbar-thumb { background: rgba(255, 0, 0, 0.3); border-radius: 3px; }
-        .map-card { flex: 0 0 350px; background: rgba(15, 5, 5, 0.6); border: 1px solid rgba(255, 0, 0, 0.15); border-radius: 6px; overflow: hidden; transition: all 0.3s ease; }
-        .map-card:hover { border-color: rgba(255, 0, 0, 0.5); transform: translateY(-5px); box-shadow: 0 10px 25px rgba(255, 0, 0, 0.15); }
-        .map-image-slot { width: 100%; height: 200px; background-color: #111; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .map-image-slot img { width: 100%; height: 100%; object-fit: cover; }
-        .map-details { padding: 20px; }
-        .map-details h3 { font-size: 18px; color: #fff; margin-bottom: 10px; letter-spacing: 1px; }
-        .map-details p { font-size: 12px; color: #999; line-height: 1.6; margin-bottom: 15px; }
-        .download-btn { display: inline-block; background: none; border: 1px solid #ff3333; color: #ff3333; padding: 8px 14px; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; cursor: pointer; transition: all 0.2s; }
-        .download-btn:hover { background: #ff3333; color: #000; }
-        @keyframes breathe { 0% { opacity: 0.2; } 50% { opacity: 1; } 100% { opacity: 0.2; } }
+        /* --- BRANDING & VISUAL  --- */
+        :root {
+            --bg-dark: #08080a;
+            --flare-orange: #ff5500;
+            --plasma-amber: #ffaa00;
+            --stark-white: #ffffff;
+            --gray-text: #a0a0aa;
+            --glass-bg: rgba(15, 15, 20, 0.7);
+            --glass-border: rgba(255, 85, 0, 0.2);
+            --neon-glow: 0 0 15px rgba(255, 85, 0, 0.4);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--stark-white);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 80% 20%, rgba(255, 85, 0, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 20% 80%, rgba(255, 170, 0, 0.03) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        /* Typography */
+        h1, h2, h3, .brand-massive {
+            font-family: 'Arial Black', 'Impact', sans-serif;
+            text-transform: uppercase;
+            font-weight: 900;
+            letter-spacing: -1px;
+        }
+
+        p {
+            color: var(--gray-text);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        /* --- CORE LAYOUT & NAVIGATION --- */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--glass-border);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .logo-btn {
+            background: linear-gradient(135deg, var(--flare-orange), var(--plasma-amber));
+            border: none;
+            color: var(--stark-white);
+            padding: 10px 18px;
+            font-family: 'Arial Black', sans-serif;
+            font-weight: 900;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-radius: 4px;
+            box-shadow: var(--neon-glow);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(255, 85, 0, 0.7);
+        }
+
+        .top-title {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.8rem;
+            color: var(--stark-white);
+            letter-spacing: 4px;
+            text-shadow: 0 0 10px rgba(255, 85, 0, 0.3);
+            pointer-events: none;
+            transition: opacity 0.1s linear;
+        }
+
+        /* Side Drawer Panel */
+        .side-drawer {
+            position: fixed;
+            top: 0;
+            left: -350px;
+            width: 350px;
+            height: 100%;
+            background: rgba(8, 8, 10, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid var(--glass-border);
+            z-index: 1001;
+            transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            padding: 80px 2rem 2rem 2rem;
+            box-shadow: 20px 0 40px rgba(0,0,0,0.8);
+        }
+
+        .side-drawer.open {
+            left: 0;
+        }
+
+        .close-drawer {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: var(--gray-text);
+            font-size: 1.2rem;
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .close-drawer:hover {
+            color: var(--stark-white);
+            border-color: var(--flare-orange);
+        }
+
+        .drawer-brand {
+            font-size: 1.5rem;
+            color: var(--flare-orange);
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(255,85,0,0.2);
+            padding-bottom: 0.5rem;
+        }
+
+        .nav-tabs {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .tab-btn {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            color: var(--gray-text);
+            padding: 15px 20px;
+            text-align: left;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--stark-white);
+            background: rgba(255, 85, 0, 0.1);
+            border-color: rgba(255, 85, 0, 0.3);
+            padding-left: 25px;
+        }
+
+        .tab-btn.active {
+            color: var(--stark-white);
+            background: linear-gradient(90deg, rgba(255, 85, 0, 0.2), transparent);
+            border-left: 4px solid var(--flare-orange);
+            border-color: var(--glass-border);
+            box-shadow: -5px 0 15px rgba(255, 85, 0, 0.1);
+        }
+
+        .drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.6);
+            z-index: 999;
+            display: none;
+            backdrop-filter: blur(4px);
+        }
+
+        /* --- DYNAMIC PAGES CONTAINER --- */
+        .page-content {
+            display: none;
+            padding-top: 70px;
+            min-height: 100vh;
+        }
+
+        .page-content.active {
+            display: block;
+        }
+
+        /* --- HOME SHOWER TAB --- */
+        /* Hero Banner */
+        .hero-banner {
+            position: relative;
+            width: 100%;
+            height: 75vh;
+            background: linear-gradient(180deg, rgba(8,8,10,0.2) 0%, var(--bg-dark) 100%), 
+                        url('https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&q=80&w=1920') center/cover no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 85, 0, 0.1);
+        }
+
+        /* Configurable overlay controller simulation styling */
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(8, 8, 10, 0.65);
+            z-index: 1;
+        }
+
+        .hero-text-wrapper {
+            position: relative;
+            z-index: 2;
+            max-width: 1000px;
+        }
+
+        .hero-headline {
+            font-size: 3.5rem;
+            line-height: 1.1;
+            color: var(--stark-white);
+            text-shadow: 0 4px 20px rgba(0,0,0,0.9);
+        }
+
+        @media (max-width: 768px) {
+            .hero-headline { font-size: 2.2rem; }
+            .top-title { display: none; }
+        }
+
+        /* Section: Experiences & Creations */
+        .section-container {
+            padding: 4rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            margin-bottom: 2rem;
+            color: var(--stark-white);
+            border-left: 5px solid var(--flare-orange);
+            padding-left: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Horizontal Scroll Container */
+        .horizontal-scroll {
+            display: flex;
+            gap: 25px;
+            overflow-x: auto;
+            padding: 20px 10px 30px 10px;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: thin;
+            scrollbar-color: var(--flare-orange) rgba(255,255,255,0.05);
+        }
+
+        .horizontal-scroll::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .horizontal-scroll::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+            border-radius: 4px;
+        }
+
+        .horizontal-scroll::-webkit-scrollbar-thumb {
+            background: var(--flare-orange);
+            border-radius: 4px;
+        }
+
+        /* Map Cards */
+        .map-card {
+            flex: 0 0 380px;
+            scroll-snap-align: start;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .map-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--plasma-amber);
+            box-shadow: 0 15px 35px rgba(255, 85, 0, 0.2);
+        }
+
+        .card-img-slot {
+            width: 100%;
+            height: 210px;
+            background: #121216;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid rgba(255,85,0,0.1);
+        }
+
+        .card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .map-card:hover .card-img {
+            transform: scale(1.05);
+        }
+
+        .card-body {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            margin-bottom: 0.75rem;
+            color: var(--stark-white);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .card-desc {
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            flex-grow: 1;
+        }
+
+        .action-btn {
+            background: transparent;
+            border: 1px solid var(--flare-orange);
+            color: var(--stark-white);
+            padding: 12px;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: inset 0 0 0 rgba(255,85,0,0);
+        }
+
+        .action-btn:hover {
+            background: var(--flare-orange);
+            box-shadow: var(--neon-glow);
+            color: var(--stark-white);
+        }
+
+        /* --- WORKING UPDATES TAB --- */
+        .updates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-top: 2rem;
+        }
+
+        .status-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 85, 0, 0.15);
+            border: 1px solid var(--flare-orange);
+            color: var(--plasma-amber);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 0.75rem;
+        }
+
+        .status-title {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            padding-right: 80px;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 3px;
+            margin: 1.2rem 0 0.8rem 0;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--flare-orange), var(--plasma-amber));
+            box-shadow: 0 0 8px var(--flare-orange);
+        }
+
+        /* --- ABOUT US TAB --- */
+        .about-hero {
+            text-align: center;
+            padding: 4rem 1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .about-header {
+            font-size: 3rem;
+            color: var(--stark-white);
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 20px rgba(255, 85, 0, 0.4);
+        }
+
+        .about-body-text {
+            font-size: 1.1rem;
+            color: var(--gray-text);
+            margin-bottom: 3rem;
+        }
+
+        /* Recruitment & Community Footer Box */
+        .join-team-box {
+            background: rgba(255, 85, 0, 0.02);
+            border: 2px dashed rgba(255, 85, 0, 0.4);
+            border-radius: 12px;
+            padding: 3rem;
+            text-align: center;
+            max-width: 750px;
+            margin: 4rem auto 0 auto;
+            box-shadow: inset 0 0 30px rgba(255, 85, 0, 0.05);
+        }
+
+        .join-title {
+            font-size: 2rem;
+            color: var(--flare-orange);
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+        }
+
+        .join-desc {
+            margin-bottom: 2rem;
+            font-size: 1rem;
+        }
+
+        .social-button-layout {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .social-link {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--stark-white);
+            padding: 12px 24px;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 0.85rem;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .social-link:hover {
+            border-color: var(--plasma-amber);
+            background: rgba(255, 170, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Utility fallbacks/alerts */
+        .error-message {
+            color: #ff3333;
+            font-size: 0.85rem;
+            border: 1px solid rgba(255, 51, 51, 0.2);
+            padding: 5px;
+            border-radius: 4px;
+            background: rgba(255, 51, 51, 0.05);
+        }
     </style>
 </head>
 <body>
-    <div class="navbar"><button class="logo-btn" onclick="toggleMenu()">[ FPE LOGO ]</button></div>
-    <div class="scrolling-title" id="fadeTitle">FLAREPOINT</div>
-    <div class="settings-menu" id="sideMenu">
-        <div class="menu-item" onclick="alert('System updates repository coming soon.')">WORKING UPDATES</div>
-        <div class="menu-item" onclick="alert('Flarepoint Fan Initiative Details.')">ABOUT US</div>
+
+    <nav class="navbar">
+        <button class="logo-btn" id="logoBtn" onclick="toggleDrawer(true)">
+            <span>☰</span> FLAREPOINT
+        </button>
+        <div class="top-title" id="scrollTitle">FLAREPOINT</div>
+        <div style="width: 120px;"></div> </nav>
+
+    <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer(false)"></div>
+    <div class="side-drawer" id="sideDrawer">
+        <button class="close-drawer" onclick="toggleDrawer(false)">✕</button>
+        <div class="drawer-brand">DASHBOARD_</div>
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('home-tab', this)">HOME SHOWER</button>
+            <button class="tab-btn" onclick="switchTab('updates-tab', this)">WORKING UPDATES</button>
+            <button class="tab-btn" onclick="switchTab('about-tab', this)">ABOUT US</button>
+        </div>
     </div>
-    <div class="hero-intro">
-        <h1>ATMOSPHERIC HORROR</h1>
-        <p>Experiential Simulations & Recreations</p>
-        <div class="scroll-indicator">↓ SCROLL TO PLUNGE INTO PITCH BLACK ↓</div>
+
+    <div id="home-tab" class="page-content active">
+        <div class="hero-banner">
+            <div class="hero-overlay"></div>
+            <div class="hero-text-wrapper">
+                <h1 class="hero-headline">We remake horror games, build immersive maps, and create original game experiences.</h1>
+            </div>
+        </div>
+
+        <div class="section-container">
+            <h2 class="section-title">EXPERIENCES & CREATIONS</h2>
+            
+            <div class="horizontal-scroll" id="mapCardsContainer">
+                <div style="color: var(--gray-text); padding: 20px;">Initializing interface data stream...</div>
+            </div>
+        </div>
     </div>
-    <div class="showcase-section" id="showcaseArea">
-        <h2 class="showcase-title">EXPERIENCES & CREATIONS</h2>
-        <div class="horizontal-scroll-container" id="cardsWrapper"></div>
+
+    <div id="updates-tab" class="page-content">
+        <div class="section-container">
+            <h2 class="section-title">WORKING UPDATES</h2>
+            <p>Real-time status tracking of structural frameworks, engine adjustments, and asset rendering simulations.</p>
+            
+            <div class="updates-grid">
+                <div class="status-card">
+                    <span class="status-badge">85% COMPLETE</span>
+                    <h3 class="status-title">Poolrooms Recreation: Level 1</h3>
+                    <p>Building extensive multi-layered geometric structures mimicking pristine structural tiles. Completing node entity paths.</p>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: 85%;"></div>
+                    </div>
+                </div>
+                <div class="status-card">
+                    <span class="status-badge">60% COMPLETE</span>
+                    <h3 class="status-title">Bacteria AI Behavior System</h3>
+                    <p>Programming complex pathfinding matrices and acoustic triggers. Refining custom dynamic speed escalation configurations.</p>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: 60%;"></div>
+                    </div>
+                </div>
+                <div class="status-card">
+                    <span class="status-badge">40% COMPLETE</span>
+                    <h3 class="status-title">Portal to Backrooms Retexturing</h3>
+                    <p>Developing corporate variants of block classifications for industrial environments. Polishing luminosity maps.</p>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: 40%;"></div>
+                    </div>
+                </div>
+                <div class="status-card">
+                    <span class="status-badge">95% COMPLETE</span>
+                    <h3 class="status-title">Audio & Ambience Soundtrack</h3>
+                    <p>Integrating low-frequency synthetic drones and localized echo soundscapes designed to induce existential tension.</p>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: 95%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <script>
-        function toggleMenu() { document.getElementById('sideMenu').classList.toggle('open'); }
-        window.addEventListener('scroll', function() {
-            const title = document.getElementById('fadeTitle');
-            const showcase = document.getElementById('showcaseArea');
-            let scrollPos = window.scrollY;
-            let textOpacity = 1 - (scrollPos / 250);
-            if (textOpacity < 0) textOpacity = 0;
-            if (textOpacity > 1) textOpacity = 1;
-            title.style.opacity = textOpacity;
-            if (scrollPos > 250) { document.body.style.backgroundColor = "#000000"; showcase.classList.add('reveal'); }
-            else { document.body.style.backgroundColor = ""; showcase.classList.remove('reveal'); }
-        });
-        fetch('maps.txt').then(r => r.text()).then(text => {
-            const wrapper = document.getElementById('cardsWrapper');
-            const mapBlocks = text.split('---').map(b => b.trim()).filter(b => b);
-            mapBlocks.forEach(block => {
-                const lines = block.split('\n').map(l => l.trim());
-                let map = {};
-                lines.forEach(line => {
-                    const [key, ...val] = line.split(':');
-                    if(key) map[key.toLowerCase()] = val.join(':').trim();
-                });
-                if(map.title) {
-                    wrapper.innerHTML += `<div class="map-card">
-                        <div class="map-image-slot"><img src="${map.image || ''}" onerror="this.style.display='none'"></div>
-                        <div class="map-details"><h3>${map.title}</h3><p>${map.description || ''}</p><a href="${map.link || '#'}" class="download-btn">Access Simulation</a></div>
-                    </div>`;
-                }
-            });
-        });
-    </script>
-</body>
-</html>
+
+    <div id="about-tab" class="page-content">
+        <div class="section-container">
+            <div class="about-hero">
+                <h1 class="about-header">Founded by anarchysios</h1>
+                <p class="about-body-text">
+                    Flarepoint Entertainment is an avant-garde digital production collective specializing in elite survival-horror conversions, reality-bending level design architecture, and custom gaming experiences. We modify boundaries to engineer atmospheres that challenge human perceptual limits.
+                </p>
+            </div>
+
+            <div class="join-team-box">
+                <h3 class="join-title">JOIN THE TEAM</h3>
+                <p class="join-desc">We are perpetually tracking talented engineers, pixel artists, sound designers, and
