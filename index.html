@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flarepoint Entertainment</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Courier New', Courier, monospace; }
+        body { background: linear-gradient(to bottom, #140505 0%, #080202 30%, #000000 60%); color: #d1d1d1; overflow-x: hidden; height: 250vh; transition: background-color 0.5s ease; }
+        .navbar { position: fixed; top: 0; left: 0; width: 100%; padding: 20px; display: flex; align-items: center; z-index: 100; }
+        .logo-btn { background: rgba(139, 0, 0, 0.15); border: 1px solid rgba(255, 0, 0, 0.3); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: #ff6666; padding: 10px 16px; cursor: pointer; font-weight: bold; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; border-radius: 4px; transition: all 0.3s ease; }
+        .logo-btn:hover { background: rgba(139, 0, 0, 0.4); border-color: #ff0000; box-shadow: 0 0 15px rgba(255, 0, 0, 0.4); color: #fff; }
+        .scrolling-title { position: fixed; top: 30px; left: 50%; transform: translateX(-50%); font-size: 22px; letter-spacing: 6px; color: #ff3333; text-shadow: 0 0 8px rgba(255, 0, 0, 0.5); opacity: 1; transition: opacity 0.1s linear; pointer-events: none; z-index: 98; }
+        .settings-menu { position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background: rgba(10, 3, 3, 0.75); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-right: 1px solid rgba(255, 0, 0, 0.2); padding: 30px; padding-top: 100px; transition: left 0.4s cubic-bezier(0.77, 0.2, 0.05, 1.0); z-index: 99; box-shadow: 10px 0 30px rgba(0, 0, 0, 0.8); }
+        .settings-menu.open { left: 0; }
+        .menu-item { display: block; color: #b0b0b0; text-decoration: none; font-size: 15px; margin-bottom: 30px; letter-spacing: 2px; cursor: pointer; transition: color 0.3s, padding-left 0.3s; }
+        .menu-item:hover { color: #ff3333; padding-left: 5px; }
+        .hero-intro { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
+        .hero-intro h1 { font-size: 40px; letter-spacing: 8px; margin-bottom: 20px; color: #ffffff; text-shadow: 0 0 20px rgba(255, 255, 255, 0.1); }
+        .hero-intro p { font-size: 14px; color: #888; letter-spacing: 2px; }
+        .scroll-indicator { margin-top: 50px; font-size: 11px; color: #ff3333; letter-spacing: 3px; animation: breathe 2.5s infinite; }
+        .showcase-section { padding: 100px 0; opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .showcase-section.reveal { opacity: 1; transform: translateY(0); }
+        .showcase-title { text-align: center; font-size: 24px; letter-spacing: 4px; margin-bottom: 40px; color: #ff3333; }
+        .horizontal-scroll-container { display: flex; gap: 30px; overflow-x: auto; padding: 20px 50px; scroll-behavior: smooth; }
+        .horizontal-scroll-container::-webkit-scrollbar { height: 6px; }
+        .horizontal-scroll-container::-webkit-scrollbar-track { background: #000; }
+        .horizontal-scroll-container::-webkit-scrollbar-thumb { background: rgba(255, 0, 0, 0.3); border-radius: 3px; }
+        .map-card { flex: 0 0 350px; background: rgba(15, 5, 5, 0.6); border: 1px solid rgba(255, 0, 0, 0.15); border-radius: 6px; overflow: hidden; transition: all 0.3s ease; }
+        .map-card:hover { border-color: rgba(255, 0, 0, 0.5); transform: translateY(-5px); box-shadow: 0 10px 25px rgba(255, 0, 0, 0.15); }
+        .map-image-slot { width: 100%; height: 200px; background-color: #111; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .map-image-slot img { width: 100%; height: 100%; object-fit: cover; }
+        .map-details { padding: 20px; }
+        .map-details h3 { font-size: 18px; color: #fff; margin-bottom: 10px; letter-spacing: 1px; }
+        .map-details p { font-size: 12px; color: #999; line-height: 1.6; margin-bottom: 15px; }
+        .download-btn { display: inline-block; background: none; border: 1px solid #ff3333; color: #ff3333; padding: 8px 14px; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; cursor: pointer; transition: all 0.2s; }
+        .download-btn:hover { background: #ff3333; color: #000; }
+        @keyframes breathe { 0% { opacity: 0.2; } 50% { opacity: 1; } 100% { opacity: 0.2; } }
+    </style>
+</head>
+<body>
+    <div class="navbar"><button class="logo-btn" onclick="toggleMenu()">[ FPE LOGO ]</button></div>
+    <div class="scrolling-title" id="fadeTitle">FLAREPOINT</div>
+    <div class="settings-menu" id="sideMenu">
+        <div class="menu-item" onclick="alert('System updates repository coming soon.')">WORKING UPDATES</div>
+        <div class="menu-item" onclick="alert('Flarepoint Fan Initiative Details.')">ABOUT US</div>
+    </div>
+    <div class="hero-intro">
+        <h1>ATMOSPHERIC HORROR</h1>
+        <p>Experiential Simulations & Recreations</p>
+        <div class="scroll-indicator">↓ SCROLL TO PLUNGE INTO PITCH BLACK ↓</div>
+    </div>
+    <div class="showcase-section" id="showcaseArea">
+        <h2 class="showcase-title">EXPERIENCES & CREATIONS</h2>
+        <div class="horizontal-scroll-container" id="cardsWrapper"></div>
+    </div>
+    <script>
+        function toggleMenu() { document.getElementById('sideMenu').classList.toggle('open'); }
+        window.addEventListener('scroll', function() {
+            const title = document.getElementById('fadeTitle');
+            const showcase = document.getElementById('showcaseArea');
+            let scrollPos = window.scrollY;
+            let textOpacity = 1 - (scrollPos / 250);
+            if (textOpacity < 0) textOpacity = 0;
+            if (textOpacity > 1) textOpacity = 1;
+            title.style.opacity = textOpacity;
+            if (scrollPos > 250) { document.body.style.backgroundColor = "#000000"; showcase.classList.add('reveal'); }
+            else { document.body.style.backgroundColor = ""; showcase.classList.remove('reveal'); }
+        });
+        fetch('maps.txt').then(r => r.text()).then(text => {
+            const wrapper = document.getElementById('cardsWrapper');
+            const mapBlocks = text.split('---').map(b => b.trim()).filter(b => b);
+            mapBlocks.forEach(block => {
+                const lines = block.split('\n').map(l => l.trim());
+                let map = {};
+                lines.forEach(line => {
+                    const [key, ...val] = line.split(':');
+                    if(key) map[key.toLowerCase()] = val.join(':').trim();
+                });
+                if(map.title) {
+                    wrapper.innerHTML += `<div class="map-card">
+                        <div class="map-image-slot"><img src="${map.image || ''}" onerror="this.style.display='none'"></div>
+                        <div class="map-details"><h3>${map.title}</h3><p>${map.description || ''}</p><a href="${map.link || '#'}" class="download-btn">Access Simulation</a></div>
+                    </div>`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
