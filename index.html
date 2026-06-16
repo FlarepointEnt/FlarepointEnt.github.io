@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flarepoint Entertainment | Premium Horror & Indie Maps</title>
     <style>
-        /* --- BRANDING & VISUAL  --- */
+        /* --- BRANDING & VISUAL THEME --- */
         :root {
             --bg-dark: #08080a;
             --flare-orange: #ff5500;
@@ -88,6 +88,11 @@
         .logo-btn:hover {
             transform: scale(1.05);
             box-shadow: 0 0 25px rgba(255, 85, 0, 0.7);
+        }
+
+        .logo-btn img {
+            max-height: 24px;
+            object-fit: contain;
         }
 
         .top-title {
@@ -215,24 +220,43 @@
             position: relative;
             width: 100%;
             height: 75vh;
-            background: linear-gradient(180deg, rgba(8,8,10,0.2) 0%, var(--bg-dark) 100%), 
-                        url('https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&q=80&w=1920') center/cover no-repeat;
+            background-color: #0c0c10;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 2rem;
             text-align: center;
             border-bottom: 1px solid rgba(255, 85, 0, 0.1);
+            overflow: hidden;
         }
 
-        /* Configurable overlay controller simulation styling */
+        #bannerImg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none; /* Controlled dynamically by data.file */
+            z-index: 0;
+        }
+
+        /* Default fallback background image when maps.txt banner line is absent */
+        .hero-banner::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&q=80&w=1920') center/cover no-repeat;
+            z-index: -1;
+        }
+
         .hero-overlay {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(8, 8, 10, 0.65);
+            background: linear-gradient(180deg, rgba(8,8,10,0.4) 0%, var(--bg-dark) 100%);
             z-index: 1;
         }
 
@@ -297,7 +321,7 @@
             border-radius: 4px;
         }
 
-        /* Map Cards */
+        /* Map Cards Styles */
         .map-card {
             flex: 0 0 380px;
             scroll-snap-align: start;
@@ -317,34 +341,42 @@
             box-shadow: 0 15px 35px rgba(255, 85, 0, 0.2);
         }
 
-        .card-img-slot {
+        .map-image-slot {
             width: 100%;
             height: 210px;
             background: #121216;
             position: relative;
             overflow: hidden;
             border-bottom: 1px solid rgba(255,85,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-text);
+            font-weight: bold;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
-        .card-img {
+        .map-image-slot img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             transition: transform 0.5s ease;
         }
 
-        .map-card:hover .card-img {
+        .map-card:hover .map-image-slot img {
             transform: scale(1.05);
         }
 
-        .card-body {
+        .map-details {
             padding: 1.5rem;
             display: flex;
             flex-direction: column;
             flex-grow: 1;
         }
 
-        .card-title {
+        .map-details h3 {
             font-size: 1.4rem;
             margin-bottom: 0.75rem;
             color: var(--stark-white);
@@ -353,7 +385,7 @@
             white-space: nowrap;
         }
 
-        .card-desc {
+        .map-details p {
             font-size: 0.9rem;
             margin-bottom: 1.5rem;
             display: -webkit-box;
@@ -363,7 +395,7 @@
             flex-grow: 1;
         }
 
-        .action-btn {
+        .download-btn {
             background: transparent;
             border: 1px solid var(--flare-orange);
             color: var(--stark-white);
@@ -376,64 +408,27 @@
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s ease;
-            box-shadow: inset 0 0 0 rgba(255,85,0,0);
+            text-transform: uppercase;
         }
 
-        .action-btn:hover {
+        .download-btn:hover {
             background: var(--flare-orange);
             box-shadow: var(--neon-glow);
-            color: var(--stark-white);
+            color: var(--stark-white) !important; /* Ensure override */
         }
 
         /* --- WORKING UPDATES TAB --- */
         .updates-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
             gap: 25px;
             margin-top: 2rem;
         }
 
-        .status-card {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 8px;
-            padding: 1.5rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .status-badge {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: rgba(255, 85, 0, 0.15);
-            border: 1px solid var(--flare-orange);
-            color: var(--plasma-amber);
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-family: 'Arial Black', sans-serif;
-            font-size: 0.75rem;
-        }
-
-        .status-title {
-            font-size: 1.3rem;
-            margin-bottom: 0.5rem;
-            padding-right: 80px;
-        }
-
-        .progress-bar-container {
-            width: 100%;
-            height: 6px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 3px;
-            margin: 1.2rem 0 0.8rem 0;
-            overflow: hidden;
-        }
-
-        .progress-bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--flare-orange), var(--plasma-amber));
-            box-shadow: 0 0 8px var(--flare-orange);
+        /* layout  */
+        .updates-grid .map-card {
+            flex: unset;
+            scroll-snap-align: unset;
         }
 
         /* --- ABOUT US TAB --- */
@@ -505,30 +500,21 @@
             background: rgba(255, 170, 0, 0.1);
             transform: translateY(-2px);
         }
-
-        /* Utility fallbacks/alerts */
-        .error-message {
-            color: #ff3333;
-            font-size: 0.85rem;
-            border: 1px solid rgba(255, 51, 51, 0.2);
-            padding: 5px;
-            border-radius: 4px;
-            background: rgba(255, 51, 51, 0.05);
-        }
     </style>
 </head>
 <body>
 
     <nav class="navbar">
-        <button class="logo-btn" id="logoBtn" onclick="toggleDrawer(true)">
-            <span>☰</span> FLAREPOINT
+        <button class="logo-btn" id="navLogoBtn" onclick="toggleDrawer(true)">
+            <span>&#9776;</span> FLAREPOINT
         </button>
         <div class="top-title" id="scrollTitle">FLAREPOINT</div>
-        <div style="width: 120px;"></div> </nav>
+        <div style="width: 120px;"></div>
+    </nav>
 
     <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer(false)"></div>
     <div class="side-drawer" id="sideDrawer">
-        <button class="close-drawer" onclick="toggleDrawer(false)">✕</button>
+        <button class="close-drawer" onclick="toggleDrawer(false)">&#10005;</button>
         <div class="drawer-brand">DASHBOARD_</div>
         <div class="nav-tabs">
             <button class="tab-btn active" onclick="switchTab('home-tab', this)">HOME SHOWER</button>
@@ -539,6 +525,7 @@
 
     <div id="home-tab" class="page-content active">
         <div class="hero-banner">
+            <img id="bannerImg" src="" alt="Dynamic Studio Banner">
             <div class="hero-overlay"></div>
             <div class="hero-text-wrapper">
                 <h1 class="hero-headline">We remake horror games, build immersive maps, and create original game experiences.</h1>
@@ -548,8 +535,8 @@
         <div class="section-container">
             <h2 class="section-title">EXPERIENCES & CREATIONS</h2>
             
-            <div class="horizontal-scroll" id="mapCardsContainer">
-                <div style="color: var(--gray-text); padding: 20px;">Initializing interface data stream...</div>
+            <div class="horizontal-scroll" id="cardsWrapper">
+                <div style="color: var(--gray-text); padding: 20px;">Awaiting interface data sync from maps.txt...</div>
             </div>
         </div>
     </div>
@@ -557,42 +544,9 @@
     <div id="updates-tab" class="page-content">
         <div class="section-container">
             <h2 class="section-title">WORKING UPDATES</h2>
-            <p>Real-time status tracking of structural frameworks, engine adjustments, and asset rendering simulations.</p>
+            <p style="margin-bottom: 2rem;">Real-time status configurations of structural frameworks, engine optimizations, and asset simulations.</p>
             
-            <div class="updates-grid">
-                <div class="status-card">
-                    <span class="status-badge">85% COMPLETE</span>
-                    <h3 class="status-title">Poolrooms Recreation: Level 1</h3>
-                    <p>Building extensive multi-layered geometric structures mimicking pristine structural tiles. Completing node entity paths.</p>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: 85%;"></div>
-                    </div>
-                </div>
-                <div class="status-card">
-                    <span class="status-badge">60% COMPLETE</span>
-                    <h3 class="status-title">Bacteria AI Behavior System</h3>
-                    <p>Programming complex pathfinding matrices and acoustic triggers. Refining custom dynamic speed escalation configurations.</p>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: 60%;"></div>
-                    </div>
-                </div>
-                <div class="status-card">
-                    <span class="status-badge">40% COMPLETE</span>
-                    <h3 class="status-title">Portal to Backrooms Retexturing</h3>
-                    <p>Developing corporate variants of block classifications for industrial environments. Polishing luminosity maps.</p>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: 40%;"></div>
-                    </div>
-                </div>
-                <div class="status-card">
-                    <span class="status-badge">95% COMPLETE</span>
-                    <h3 class="status-title">Audio & Ambience Soundtrack</h3>
-                    <p>Integrating low-frequency synthetic drones and localized echo soundscapes designed to induce existential tension.</p>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: 95%;"></div>
-                    </div>
-                </div>
-            </div>
+            <div class="updates-grid" id="updatesWrapper"></div>
         </div>
     </div>
 
@@ -600,11 +554,66 @@
         <div class="section-container">
             <div class="about-hero">
                 <h1 class="about-header">Founded by anarchysios</h1>
-                <p class="about-body-text">
-                    Flarepoint Entertainment is an avant-garde digital production collective specializing in elite survival-horror conversions, reality-bending level design architecture, and custom gaming experiences. We modify boundaries to engineer atmospheres that challenge human perceptual limits.
+                <p class="about-body-text" id="aboutTeamDescription">
+                    Flarepoint Entertainment is an avant-garde digital production studio specializing in survival-horror conversions, reality-bending custom map design configurations, and rich gaming architecture setups.
                 </p>
             </div>
 
             <div class="join-team-box">
                 <h3 class="join-title">JOIN THE TEAM</h3>
-                <p class="join-desc">We are perpetually tracking talented engineers, pixel artists, sound designers, and
+                <p class="join-desc">We are tracking elite map designers, tech artists, and environment builders. Join our community server node to deploy applications immediately.</p>
+                <div class="social-button-layout">
+                    <a href="https://discord.gg" id="profileDiscord" target="_blank" class="social-link">DISCORD</a>
+                    <a href="https://youtube.com" id="profileYoutube" target="_blank" class="social-link">YOUTUBE</a>
+                    <a href="https://mcpedl.com" id="profileMcpedl" target="_blank" class="social-link">MCPEDL</a>
+                    <a href="https://curseforge.com" id="profileCurseforge" target="_blank" class="social-link">CURSEFORGE</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a id="appDiscordLink" href="#" style="display:none;"></a>
+
+    <script>
+        /* --- DYNAMIC TITLE FADE SCROLL CONTROLLER --- */
+        window.addEventListener('scroll', function() {
+            const scrollTitle = document.getElementById('scrollTitle');
+            let scrollTop = window.scrollY || document.documentElement.scrollTop;
+            let opacity = 1 - (scrollTop / 250);
+            if (opacity < 0) opacity = 0;
+            if (opacity > 1) opacity = 1;
+            scrollTitle.style.opacity = opacity;
+        });
+
+        /* --- SIDE DRAWER & TAB CONTROLLERS --- */
+        function toggleDrawer(open) {
+            const drawer = document.getElementById('sideDrawer');
+            const overlay = document.getElementById('drawerOverlay');
+            if (open) {
+                drawer.classList.add('open');
+                overlay.style.display = 'block';
+            } else {
+                drawer.classList.remove('open');
+                overlay.style.display = 'none';
+            }
+        }
+
+        function switchTab(tabId, buttonElement) {
+            const panels = document.querySelectorAll('.page-content');
+            panels.forEach(panel => panel.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            buttonElement.classList.add('active');
+            toggleDrawer(false);
+            window.scrollTo(0, 0);
+        }
+
+        /* --- ENGINE --- */
+        fetch('maps.txt')
+            .then(r => {
+                if(!r.ok) {
+                    thr
