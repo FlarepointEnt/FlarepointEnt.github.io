@@ -39,11 +39,11 @@ def fetch_project(project_id: int, api_key: str) -> Optional[dict]:
                 return {
                     "name": name,
                     "summary": summary,
-                    "logo_url": img,
                     "logoUrl": img,
+                    "logo_url": img,
                     "thumbnailUrl": img,
-                    "website_url": lnk,
-                    "websiteUrl": lnk
+                    "websiteUrl": lnk,
+                    "website_url": lnk
                 }
     except requests.RequestException:
         pass
