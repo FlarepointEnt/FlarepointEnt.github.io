@@ -2,60 +2,52 @@ import json
 import os
 import sys
 import time
+import re
 from typing import Optional
 import requests
 
 DEFAULT_PROJECT_ID = "1555157"
-API_BASE = "https://curseforge.com"
 OUTPUT_FILE = "projects.json"
 REQUEST_TIMEOUT = 15
 
-def get_api_key() -> str:
-    key = os.environ.get("CURSEFORGE_API_KEY")
-    if not key:
-        sys.exit("ERROR: CURSEFORGE_API_KEY environment variable is not set.")
-    return key
-
-def fetch_project(project_id: int, api_key: str) -> Optional[dict]:
+def fetch_project(project_id: int) -> Optional[dict]:
+    url = f"https://curseforge.com" if str(project_id) == "1555157" else f"https://curseforge.com{project_id}"
     headers = {
-        "x-api-key": api_key,
-        "Accept": "application/json",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
-    
-    url = f"{API_BASE}/{project_id}"
-    
     try:
         response = requests.get(url, headers=headers, timeout=REQUEST_TIMEOUT)
-        if response.status_code == 200:
-            payload = response.json().get("data") or {}
-            if payload:
-                name = payload.get("name", "Untitled project")
-                summary = payload.get("summary", "")
-                
-                logo = payload.get("logo") or {}
-                img = logo.get("url") or logo.get("thumbnailUrl") or ""
-                
-                links = payload.get("links") or {}
-                lnk = links.get("websiteUrl") or f"https://curseforge.com{project_id}"
-                
-                return {
-                    "name": name,
-                    "summary": summary,
-                    "logoUrl": img,
-                    "logo_url": img,
-                    "thumbnailUrl": img,
-                    "websiteUrl": lnk,
-                    "website_url": lnk
-                }
-    except requests.RequestException:
-        pass
+        if response.status_code != 200:
+            return None
+        html = response.text
         
-    return None
+        name_match = re.search(r'<h1 class="project-header__title[^"]*">(.*?)</h1>', html)
+        name = name_match.group(1).strip() if name_match else "Backrooms Back on Track"
+        
+        desc_match = re.search(r'<p class="project-header__summary[^"]*">(.*?)</p>', html)
+        summary = desc_match.group(1).strip() if desc_match else ""
+        if not summary:
+            desc_match = re.search(r'<meta name="description" content="(.*?)"', html)
+            summary = desc_match.group(1).strip() if desc_match else ""
+
+        img_match = re.search(r'<img class="project-avatar__image" src="(.*?)"', html)
+        img = img_match.group(1).strip() if img_match else "https://forgecdn.net"
+
+        return {
+            "name": name,
+            "summary": summary,
+            "logoUrl": img,
+            "logo_url": img,
+            "thumbnailUrl": img,
+            "websiteUrl": url,
+            "website_url": url
+        }
+    except Exception:
+        return None
 
 def main() -> None:
-    api_key = get_api_key()
-    raw_input = os.environ.get("PROJECT_IDS")
-    if not raw_input or raw_input.strip() == "":
+    raw_input = os.environ.get("PROJECT_IDS") or DEFAULT_PROJECT_ID
+    if not raw_input.strip():
         raw_input = DEFAULT_PROJECT_ID
 
     project_ids = []
@@ -69,13 +61,14 @@ def main() -> None:
 
     projects = []
     for project_id in project_ids:
-        data = fetch_project(project_id, api_key)
+        data = fetch_project(project_id)
         if data:
             projects.append(data)
-        time.sleep(0.3)
+        time.sleep(0.5)
 
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         json.dump(projects, f, indent=2, ensure_ascii=False)
 
 if __name__ == "__main__":
     main()
+
