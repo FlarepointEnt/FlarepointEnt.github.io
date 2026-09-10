@@ -1,93 +1,21 @@
-#!/usr/bin/env python3
-"""
-fetch_projects.py — FlarepointEnt automation brain.
- 
-Pulls live project data from the CurseForge API and writes it to
-projects.json, which index.html fetches at page load to build the
-project cards. Run by .github/workflows/update_projects.yml on a
-schedule or on-demand — no hardcoded list of IDs to keep in sync
-with this file.
- 
-Project IDs come from (in priority order):
-  1. A command-line argument:      python fetch_projects.py "1555157,123456"
-  2. The PROJECT_IDS env var:      PROJECT_IDS="1555157,123456" python fetch_projects.py
-  3. DEFAULT_PROJECT_IDS below, if neither of the above is set.
- 
-In CI, the workflow's "project_ids" workflow_dispatch input is passed
-in as the PROJECT_IDS env var. Scheduled (cron) runs don't carry that
-input, so they fall back to DEFAULT_PROJECT_IDS automatically — the
-site never goes stale-blank just because nobody typed anything in.
- 
-The CurseForge API key is read from an environment variable only. It
-is never hardcoded here and never committed to the repository — in CI
-it is injected from a GitHub Actions secret.
-"""
- 
 import json
 import os
 import sys
 import time
-from typing import List, Optional
- 
+from typing import Optional
 import requests
- 
-# Fallback used whenever no project IDs are supplied any other way.
-# Keep this in sync with the workflow's default workflow_dispatch input.
-DEFAULT_PROJECT_IDS = "1555157"
- 
-API_BASE = "https://api.curseforge.com/v1/mods"
+
+DEFAULT_PROJECT_ID = "1555157"
+API_BASE = "https://curseforge.com"
 OUTPUT_FILE = "projects.json"
-REQUEST_TIMEOUT = 15  # seconds
- 
- 
+REQUEST_TIMEOUT = 15
+
 def get_api_key() -> str:
     key = os.environ.get("CURSEFORGE_API_KEY")
     if not key:
-        sys.exit(
-            "ERROR: CURSEFORGE_API_KEY is not set.\n"
-            "Set it as an environment variable locally, or as a GitHub "
-            "Actions secret in CI, before running this script."
-        )
+        sys.exit("ERROR: CURSEFORGE_API_KEY environment variable is not set.")
     return key
- 
- 
-def resolve_project_ids() -> List[int]:
-    """
-    Work out which CurseForge project IDs to fetch, from a CLI arg,
-    then the PROJECT_IDS env var, then DEFAULT_PROJECT_IDS — parsing
-    a comma-separated string into a clean list of ints along the way.
-    """
-    if len(sys.argv) > 1 and sys.argv[1].strip():
-        raw = sys.argv[1]
-        source = "command-line argument"
-    else:
-        raw = os.environ.get("PROJECT_IDS", "")
-        source = "PROJECT_IDS environment variable"
- 
-    raw = raw.strip()
-    if not raw:
-        raw = DEFAULT_PROJECT_IDS
-        source = "default fallback"
- 
-    print(f"Project IDs source: {source} ('{raw}')")
- 
-    ids: List[int] = []
-    for chunk in raw.split(","):
-        chunk = chunk.strip()
-        if not chunk:
-            continue
-        try:
-            ids.append(int(chunk))
-        except ValueError:
-            print(f"  ! Ignoring invalid project ID: '{chunk}'")
- 
-    if not ids:
-        print(f"No valid project IDs found — falling back to default: {DEFAULT_PROJECT_IDS}")
-        ids = [int(pid) for pid in DEFAULT_PROJECT_IDS.split(",") if pid.strip()]
- 
-    return ids
- 
- 
+
 def fetch_project(project_id: int, api_key: str) -> Optional[dict]:
     url = f"{API_BASE}/{project_id}"
     headers = {
@@ -96,46 +24,65 @@ def fetch_project(project_id: int, api_key: str) -> Optional[dict]:
     }
     try:
         response = requests.get(url, headers=headers, timeout=REQUEST_TIMEOUT)
+        print(f"API Request for ID {project_id} returned status: {response.status_code}")
         response.raise_for_status()
     except requests.RequestException as exc:
         print(f"  ! Skipped project {project_id}: {exc}")
         return None
- 
+
     payload = response.json().get("data") or {}
     if not payload:
-        print(f"  ! Skipped project {project_id}: empty response")
+        print(f"  ! Skipped project {project_id}: API response data block is empty.")
         return None
- 
+
+    name = payload.get("name", "Untitled project")
+    summary = payload.get("summary", "")
+    
     logo = payload.get("logo") or {}
+    logo_url = logo.get("url") or logo.get("thumbnailUrl") or ""
+    
     links = payload.get("links") or {}
- 
+    website_url = links.get("websiteUrl") or f"https://curseforge.com{project_id}"
+
     return {
-        "name": payload.get("name", "Untitled project"),
-        "summary": payload.get("summary", ""),
-        "logoUrl": logo.get("url", ""),
-        "websiteUrl": links.get("websiteUrl", ""),
+        "name": name,
+        "summary": summary,
+        "logoUrl": logo_url,
+        "websiteUrl": website_url,
     }
- 
- 
+
 def main() -> None:
     api_key = get_api_key()
-    project_ids = resolve_project_ids()
+    
+    raw_input = os.environ.get("PROJECT_IDS")
+    if not raw_input or raw_input.strip() == "":
+        raw_input = DEFAULT_PROJECT_ID
+
+    project_ids = []
+    for item in raw_input.split(","):
+        item = item.strip()
+        if item.isdigit():
+            project_ids.append(int(item))
+
+    if not project_ids:
+        print("No valid numeric project IDs found. Using fallback default.")
+        project_ids = [int(DEFAULT_PROJECT_ID)]
+
     projects = []
- 
-    print(f"Fetching {len(project_ids)} project(s) from CurseForge...")
+    print(f"Connecting to CurseForge API to query {len(project_ids)} target project(s)...")
+    
     for project_id in project_ids:
-        print(f"→ {project_id}")
+        print(f"→ Processing ID: {project_id}")
         data = fetch_project(project_id, api_key)
         if data:
             projects.append(data)
-        time.sleep(0.3)  # be polite to the API
- 
+            print(f"  ✓ Successfully extracted data for: {data['name']}")
+        time.sleep(0.3)
+
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         json.dump(projects, f, indent=2, ensure_ascii=False)
- 
-    print(f"Wrote {len(projects)} project(s) to {OUTPUT_FILE}")
- 
- 
+
+    print(f"Pipeline complete. Wrote {len(projects)} record(s) to {OUTPUT_FILE}")
+
 if __name__ == "__main__":
     main()
- 
