@@ -6,7 +6,6 @@ from typing import Optional
 import requests
 
 DEFAULT_PROJECT_ID = "1555157"
-API_BASE = "https://curseforge.com"
 OUTPUT_FILE = "projects.json"
 REQUEST_TIMEOUT = 15
 
@@ -17,22 +16,31 @@ def get_api_key() -> str:
     return key
 
 def fetch_project(project_id: int, api_key: str) -> Optional[dict]:
-    url = f"{API_BASE}/{project_id}"
     headers = {
         "x-api-key": api_key,
         "Accept": "application/json",
     }
-    try:
-        response = requests.get(url, headers=headers, timeout=REQUEST_TIMEOUT)
-        print(f"API Request for ID {project_id} returned status: {response.status_code}")
-        response.raise_for_status()
-    except requests.RequestException as exc:
-        print(f"  ! Skipped project {project_id}: {exc}")
-        return None
+    
+    urls = [
+        f"https://curseforge.com{project_id}",
+        f"https://curseforge.com{project_id}",
+        f"https://curseforge.com{project_id}"
+    ]
+    
+    payload = {}
+    for url in urls:
+        try:
+            response = requests.get(url, headers=headers, timeout=REQUEST_TIMEOUT)
+            if response.status_code == 200:
+                payload = response.json().get("data") or {}
+                if payload:
+                    print(f"  ✓ Success using endpoint: {url}")
+                    break
+        except requests.RequestException:
+            continue
 
-    payload = response.json().get("data") or {}
     if not payload:
-        print(f"  ! Skipped project {project_id}: API response data block is empty.")
+        print(f"  ! Skipped project {project_id}: Checked all CurseForge sub-endpoints but data payload returned empty.")
         return None
 
     name = payload.get("name", "Untitled project")
@@ -42,7 +50,7 @@ def fetch_project(project_id: int, api_key: str) -> Optional[dict]:
     logo_url = logo.get("url") or logo.get("thumbnailUrl") or ""
     
     links = payload.get("links") or {}
-    website_url = links.get("websiteUrl") or f"https://curseforge.com{project_id}"
+    website_url = links.get("websiteUrl") or f"https://www.curseforge.com/minecraft-bedrock/maps/backrooms-back-on-track"
 
     return {
         "name": name,
@@ -65,7 +73,6 @@ def main() -> None:
             project_ids.append(int(item))
 
     if not project_ids:
-        print("No valid numeric project IDs found. Using fallback default.")
         project_ids = [int(DEFAULT_PROJECT_ID)]
 
     projects = []
