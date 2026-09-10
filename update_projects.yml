@@ -1,0 +1,43 @@
+name: Update CurseForge Projects
+
+"on":
+  schedule:
+    # Runs every day at 06:00 UTC. Edit the cron expression to change
+    # the schedule — https://crontab.guru is handy for this.
+    - cron: "0 6 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  update-projects:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Fetch latest project data from CurseForge
+        env:
+          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
+        run: python fetch_projects.py
+
+      - name: Commit and push projects.json if it changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add projects.json
+          if git diff --cached --quiet; then
+            echo "No changes to projects.json — nothing to commit."
+          else
+            git commit -m "chore: update projects.json from CurseForge [automated]"
+            git push
+          fi
