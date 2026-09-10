@@ -3,9 +3,17 @@ name: Update CurseForge Projects
 "on":
   schedule:
     # Runs every day at 06:00 UTC. Edit the cron expression to change
-    # the schedule — https://crontab.guru is handy for this.
+    # the schedule — https://crontab.guru is handy for this. Scheduled
+    # runs have no manual input, so they use fetch_projects.py's own
+    # default (currently 1555157).
     - cron: "0 6 * * *"
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      project_ids:
+        description: "Enter a comma-separated list of your CurseForge Project IDs (e.g., 1555157, 123456)."
+        required: false
+        default: "1555157"
+        type: string
  
 permissions:
   contents: write
@@ -28,6 +36,7 @@ jobs:
       - name: Fetch latest project data from CurseForge
         env:
           CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
+          PROJECT_IDS: ${{ github.event.inputs.project_ids }}
         run: python fetch_projects.py
  
       - name: Commit and push projects.json if it changed
