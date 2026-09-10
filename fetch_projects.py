@@ -17,11 +17,13 @@ def get_api_key() -> str:
     return key
 
 def fetch_project(project_id: int, api_key: str) -> Optional[dict]:
-    url = f"{API_BASE}/{project_id}"
     headers = {
         "x-api-key": api_key,
         "Accept": "application/json",
     }
+    
+    url = f"{API_BASE}/{project_id}"
+    
     try:
         response = requests.get(url, headers=headers, timeout=REQUEST_TIMEOUT)
         if response.status_code == 200:
@@ -47,6 +49,7 @@ def fetch_project(project_id: int, api_key: str) -> Optional[dict]:
                 }
     except requests.RequestException:
         pass
+        
     return None
 
 def main() -> None:
