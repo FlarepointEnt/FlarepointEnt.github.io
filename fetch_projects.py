@@ -6,7 +6,6 @@ from typing import Optional
 import requests
 
 DEFAULT_PROJECT_ID = "1555157"
-API_BASE = "https://curseforge.com"
 OUTPUT_FILE = "projects.json"
 REQUEST_TIMEOUT = 15
 
@@ -17,48 +16,46 @@ def get_api_key() -> str:
     return key
 
 def fetch_project(project_id: int, api_key: str) -> Optional[dict]:
-    if str(project_id) == "1555157":
-        img_fallback = "https://forgecdn.net"
-        link_fallback = "https://curseforge.com"
-        return {
-            "name": "Backrooms Back on Track",
-            "summary": "As a corporate worker who slipped entirely out of your dimension, navigate the endless backrooms and find a way home in this Bedrock horror experience.",
-            "logoUrl": img_fallback,
-            "logo_url": img_fallback,
-            "thumbnailUrl": img_fallback,
-            "websiteUrl": link_fallback,
-            "website_url": link_fallback
-        }
-
-    url = f"{API_BASE}/{project_id}"
     headers = {
         "x-api-key": api_key,
         "Accept": "application/json",
     }
+    
+    url = f"https://curseforge.com{project_id}"
+    
     try:
         response = requests.get(url, headers=headers, timeout=REQUEST_TIMEOUT)
+        print(f"API Debug Status for ID {project_id}: {response.status_code}")
+        
         if response.status_code == 200:
             payload = response.json().get("data") or {}
             if payload:
+                name = payload.get("name", "Untitled project")
+                summary = payload.get("summary", "")
+                
                 logo = payload.get("logo") or {}
-                links = payload.get("links") or {}
                 img = logo.get("url") or logo.get("thumbnailUrl") or ""
+                
+                links = payload.get("links") or {}
                 lnk = links.get("websiteUrl") or f"https://curseforge.com{project_id}"
+                
                 return {
-                    "name": payload.get("name", "Untitled project"),
-                    "summary": payload.get("summary", ""),
+                    "name": name,
+                    "summary": summary,
                     "logoUrl": img,
                     "logo_url": img,
                     "thumbnailUrl": img,
                     "websiteUrl": lnk,
                     "website_url": lnk
                 }
-    except requests.RequestException:
-        pass
+    except requests.RequestException as e:
+        print(f"Error connecting: {e}")
+        
     return None
 
 def main() -> None:
     api_key = get_api_key()
+    
     raw_input = os.environ.get("PROJECT_IDS")
     if not raw_input or raw_input.strip() == "":
         raw_input = DEFAULT_PROJECT_ID
@@ -73,10 +70,13 @@ def main() -> None:
         project_ids = [int(DEFAULT_PROJECT_ID)]
 
     projects = []
+    print(f"Querying live CurseForge database for IDs: {project_ids}")
+    
     for project_id in project_ids:
         data = fetch_project(project_id, api_key)
         if data:
             projects.append(data)
+            print(f"Successfully scraped: {data['name']}")
         time.sleep(0.3)
 
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
