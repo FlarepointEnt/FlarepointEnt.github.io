@@ -18,12 +18,16 @@ def get_api_key() -> str:
 
 def fetch_project(project_id: int, api_key: str) -> Optional[dict]:
     if str(project_id) == "1555157":
+        img_fallback = "https://forgecdn.net"
+        link_fallback = "https://curseforge.com"
         return {
             "name": "Backrooms Back on Track",
             "summary": "As a corporate worker who slipped entirely out of your dimension, navigate the endless backrooms and find a way home in this Bedrock horror experience.",
-            "logo_url": "https://forgecdn.net",
-            "thumbnailUrl": "https://forgecdn.net",
-            "website_url": "https://www.curseforge.com/minecraft-bedrock/maps/backrooms-back-on-track"
+            "logoUrl": img_fallback,
+            "logo_url": img_fallback,
+            "thumbnailUrl": img_fallback,
+            "websiteUrl": link_fallback,
+            "website_url": link_fallback
         }
 
     url = f"{API_BASE}/{project_id}"
@@ -43,8 +47,10 @@ def fetch_project(project_id: int, api_key: str) -> Optional[dict]:
                 return {
                     "name": payload.get("name", "Untitled project"),
                     "summary": payload.get("summary", ""),
+                    "logoUrl": img,
                     "logo_url": img,
                     "thumbnailUrl": img,
+                    "websiteUrl": lnk,
                     "website_url": lnk
                 }
     except requests.RequestException:
